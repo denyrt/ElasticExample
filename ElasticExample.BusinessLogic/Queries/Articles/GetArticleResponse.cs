@@ -6,12 +6,14 @@ namespace ElasticExample.BusinessLogic.Queries.Articles
     public record GetArticleResponse : BaseResponse<GetArticleResponse>
     {
         public Article? Article { get; init; }
+        public User? Author { get; init; }
 
-        public static GetArticleResponse FromSuccess(Article article) => new()
+        public static GetArticleResponse FromSuccess(Article article, User author) => new()
         {
             IsSuccess = true,
             Message = "Ok",
-            Article = article
+            Article = article,
+            Author = author
         };
     }
 }

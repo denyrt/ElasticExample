@@ -1,15 +1,14 @@
-﻿using ElasticExample.Domain.Entities;
-using MediatR;
+﻿using MediatR;
 
 namespace ElasticExample.BusinessLogic.Events.Articles
 {
-    public record ArticleCreatedEvent : INotification
+    internal record ArticleCreatedEvent : INotification
     {
-        public ArticleCreatedEvent(ArticleEntity articleEntity)
+        public ArticleCreatedEvent(Guid articleId)
         {
-            ArticleEntity = articleEntity;
+            ArticleId = articleId;
         }
 
-        public ArticleEntity ArticleEntity { get; set; }
+        public Guid ArticleId { get; set; }
     }
 }

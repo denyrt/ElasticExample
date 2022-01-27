@@ -12,7 +12,8 @@ namespace ElasticExample.Data.Configurations
             builder.Property(x => x.Title).IsRequired().HasMaxLength(255);
             builder.Property(x => x.Content).IsRequired().HasMaxLength(5000);
             builder.Property(x => x.CreatedDate).IsRequired();
-            builder.Property(x => x.UpdateDate).IsRequired();
+            builder.Property(x => x.UpdatedDate).IsRequired();
+            builder.Property(x => x.AuthorId).IsRequired();
         }
     }
 }

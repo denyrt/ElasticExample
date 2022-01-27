@@ -6,7 +6,8 @@ namespace ElasticExample.Data.Contexts
 {
     public class AppDbContext : DbContext
     {
-        public DbSet<ArticleEntity> ArticleEntities { get; set; }
+        public DbSet<UserEntity> UserEntities { get; set; } = null!;
+        public DbSet<ArticleEntity> ArticleEntities { get; set; } = null!;
 
         public AppDbContext(DbContextOptions options) : base(options)
         {

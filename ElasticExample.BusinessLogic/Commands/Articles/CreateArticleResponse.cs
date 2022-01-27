@@ -1,4 +1,5 @@
 ﻿using ElasticExample.BusinessLogic.Responses;
+using ElasticExample.Domain.Constants;
 
 namespace ElasticExample.BusinessLogic.Commands.Articles
 {
@@ -10,7 +11,7 @@ namespace ElasticExample.BusinessLogic.Commands.Articles
         {
             Id = id,
             IsSuccess = true,
-            Message = "Ok"
+            Message = MessageConstants.Ok
         };
     }
 }

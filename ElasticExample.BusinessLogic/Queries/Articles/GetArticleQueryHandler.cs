@@ -1,40 +1,52 @@
 ﻿using ElasticExample.BusinessLogic.Models;
-using ElasticExample.Data.Contexts;
+using ElasticExample.Domain.Constants;
+using ElasticExample.Elasticsearch.Indices;
 using MediatR;
+using Nest;
 
 namespace ElasticExample.BusinessLogic.Queries.Articles
 {
     public class GetArticleQueryHandler : IRequestHandler<GetArticleQuery, GetArticleResponse>
     {
-        private readonly AppDbContext _appDbContext;
+        private readonly IElasticClient _elasticsearchClient;
 
-        public GetArticleQueryHandler(AppDbContext appDbContext)
+        public GetArticleQueryHandler(IElasticClient elasticsearchClient)
         {
-            _appDbContext = appDbContext;
+            _elasticsearchClient = elasticsearchClient;
         }
 
         public async Task<GetArticleResponse> Handle(GetArticleQuery request, CancellationToken cancellationToken)
         {
-            var keyValues = new object[] { request.Id };
-            var entry = await _appDbContext.ArticleEntities.FindAsync(keyValues, cancellationToken);
+            var entry = await _elasticsearchClient.GetAsync(
+                DocumentPath<ArticleIndex>.Id(request.Id), 
+                x => x.Index("articles"),
+                cancellationToken);
             
-            if (entry == null)
+            if (!entry.Found)
             {
                 return new GetArticleResponse
                 {
                     IsSuccess = false,
-                    Message = "NotFound"
+                    Message = MessageConstants.NotFound
                 };
             }
 
-            return GetArticleResponse.FromSuccess(new Article 
+            var article = new Article
             {
-                Id = entry.Id,
-                Title = entry.Title,
-                Content = entry.Content,
-                CreatedDate = entry.CreatedDate,
-                UpdatedDate = entry.UpdateDate
-            });
+                Id = entry.Source.Id,
+                Title = entry.Source.Title,
+                Content = entry.Source.Content,
+                CreatedDate = entry.Source.CreatedDate,
+                UpdatedDate = entry.Source.UpdatedDate
+            };
+
+            var author = new User
+            {
+                Id = entry.Source.AuthorId,
+                Username = entry.Source.AuthorName
+            };
+
+            return GetArticleResponse.FromSuccess(article, author);
         }
     }
 }

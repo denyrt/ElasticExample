@@ -3,9 +3,11 @@
     public class ArticleEntity
     {
         public Guid Id { get; set; }
-        public string Title { get; set; } = string.Empty;
-        public string Content { get; set; } = string.Empty;
+        public string? Title { get; set; }
+        public string? Content { get; set; }
         public DateTime CreatedDate { get; set; }
-        public DateTime UpdateDate { get; set; }
+        public DateTime UpdatedDate { get; set; }
+        public Guid AuthorId { get; set; }
+        public UserEntity? Author { get; set; }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using ElasticExample.BusinessLogic.Events.Articles;
 using ElasticExample.Data.Contexts;
+using ElasticExample.Domain.Constants;
 using ElasticExample.Domain.Entities;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace ElasticExample.BusinessLogic.Commands.Articles
 {
@@ -24,12 +26,25 @@ namespace ElasticExample.BusinessLogic.Commands.Articles
                 Title = request.Title,
                 Content = request.Content,
                 CreatedDate = utcNow,
-                UpdateDate = utcNow
+                UpdatedDate = utcNow,
+                AuthorId = request.AuthorId
             };
 
-            await _appDbContext.ArticleEntities.AddAsync(entity, cancellationToken);
-            await _appDbContext.SaveChangesAsync(cancellationToken);
-            await _mediator.Publish(new ArticleCreatedEvent(entity), cancellationToken);
+            try
+            {
+                await _appDbContext.ArticleEntities.AddAsync(entity, cancellationToken);
+                await _appDbContext.SaveChangesAsync(cancellationToken);
+            }
+            catch (DbUpdateException)
+            {
+                return new CreateArticleResponse
+                {
+                    IsSuccess = false,
+                    Message = MessageConstants.Conflict
+                };
+            }
+
+            await _mediator.Publish(new ArticleCreatedEvent(entity.Id), cancellationToken);
 
             return CreateArticleResponse.FromSuccess(entity.Id);
         }
